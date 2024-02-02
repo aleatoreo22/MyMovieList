@@ -1,0 +1,43 @@
+@using TheMovieDB
+
+@page "/"
+
+<div class="container" style="horiz-align: center">
+    <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReached="FetchItens">
+        <div class="row row-cols-auto">
+            @foreach (var item in _covers)
+            {
+                <div class="col-xl-2 ">
+                    <Cover Id="@item.Id" Name="@item.Name" ImageSource="@(TheMovieDB.Global.ImageSizeUrl.IMAGE_URL_600X900 + item.ImageSource)"/>
+                </div>
+            }
+            <label id="observerTarget">Loading...</label>
+        </div>
+
+    </InfiniteScroll>
+</div>
+
+@code {
+    private readonly List<CoverModel> _covers = new();
+    private int _page = 1;
+    private readonly Client _client = new(Global.TMDBToken);
+    
+    private Task FetchItens()
+    {
+        _covers.AddRange(_client.PopularMovie(_page).results.Select(movie =>
+            new CoverModel()
+            {
+                ImageSource = movie.poster_path,
+                Name = movie.title,
+                Id = (int)movie.id!
+            }).ToList());
+        _page++;
+        return Task.CompletedTask;
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        FetchItens();
+        return Task.CompletedTask;
+    }
+}

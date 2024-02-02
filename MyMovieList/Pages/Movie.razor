@@ -1,0 +1,51 @@
+@using TheMovieDB
+@page "/Movie/{Id:int}"
+
+<style>
+    body
+    {
+        background-color: #6f42c1;    
+    }    
+</style>
+
+<div class="container" style="padding: 0px; margin: auto;">
+    <div class="col row-cols-auto">
+        <div class="row position-absolute">
+            <img src="@(TheMovieDB.Global.ImageSizeUrl.IMAGE_URL_1280X720 + _movie?.backdrop_path)" class='img-responsive w-100' alt="">
+        </div>
+        <div class="row position-absolute">
+            <img src="\Resources\background.png" height="720" alt="">
+        </div>
+
+        <div class="row position-absolute">
+            <label style="color: white; font-size: 30px; font-family: 'Cascadia Code';">
+                @_movie.original_title
+            </label>
+            <img src="@(TheMovieDB.Global.ImageSizeUrl.IMAGE_URL_600X900 + _movie?.poster_path)"/>
+        </div>
+        <div class="row position-absolute">
+            <div class="rounded-square" style="color:  black"/>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    readonly Client _client = new(Global.TMDBToken);
+    TheMovieDB.Model.Movie? _movie;
+
+    protected override Task OnInitializedAsync()
+    {
+        FetchMovie();
+        return Task.CompletedTask;
+    }
+
+    void FetchMovie()
+    {
+        _movie = _client.Movie(Id);
+    }
+
+}
