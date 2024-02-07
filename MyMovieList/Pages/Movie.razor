@@ -20,6 +20,7 @@
         <div class="row position-absolute">
             <label style="color: white; font-size: 30px; font-family: 'Cascadia Code';">
                 @_movie.original_title
+                @_movie.original_language
             </label>
             <img src="@(TheMovieDB.Global.ImageSizeUrl.IMAGE_URL_600X900 + _movie?.poster_path)"/>
         </div>

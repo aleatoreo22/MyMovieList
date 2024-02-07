@@ -6,9 +6,9 @@ public static class Global
 
     public static void GetToken()
     {
-        var envFile = Environment.CurrentDirectory + @"\.env";
+        var envFile = Environment.CurrentDirectory + @"/.env";
         if (!File.Exists(envFile))
-            throw new Exception("can't found .env file");
+            throw new Exception("can't found .env file in " + envFile);
         StreamReader sr = new StreamReader(envFile);
         var line = sr.ReadLine();
         if (string.IsNullOrEmpty(line))
