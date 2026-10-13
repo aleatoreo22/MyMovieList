@@ -8,7 +8,8 @@
             @foreach (var item in _covers)
             {
                 <div class="col-xl-2 ">
-                    <Cover Id="@item.Id" Name="@item.Name" ImageSource="@(TheMovieDB.Global.ImageSizeUrl.IMAGE_URL_600X900 + item.ImageSource)"/>
+                    <Cover Id="@item.Id" Name="@item.Name"
+                        ImageSource="@(TheMovieDB.Global.ImageSizeUrl.IMAGE_URL_600X900 + item.ImageSource)" />
                 </div>
             }
             <label id="observerTarget">Loading...</label>
@@ -20,19 +21,22 @@
 @code {
     private readonly List<CoverModel> _covers = new();
     private int _page = 1;
-    private readonly Client _client = new(Global.TMDBToken);
-    
-    private Task FetchItens()
+    private readonly TMDBSharp.Client _client = new(Global.TMDBToken ?? "");
+
+    private async void FetchItens()
     {
-        _covers.AddRange(_client.PopularMovie(_page).results.Select(movie =>
-            new CoverModel()
-            {
-                ImageSource = movie.poster_path,
-                Name = movie.title,
-                Id = (int)movie.id!
-            }).ToList());
+        var popularMovies = await _client.MovieLists.GetPopular(page: _page);
+
+        var covers = popularMovies?.Results?.Select(movie =>
+        new CoverModel()
+        {
+            ImageSource = movie.PosterPath,
+            Name = movie.Title,
+            Id = movie.Id.HasValue ? (int)movie.Id.Value : 0
+        }) ?? Enumerable.Empty<CoverModel>();
+
+        _covers.AddRange(covers);
         _page++;
-        return Task.CompletedTask;
     }
 
     protected override Task OnInitializedAsync()
